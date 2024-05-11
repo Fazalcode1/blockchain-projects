@@ -5,6 +5,7 @@ from uuid import uuid4
 from urllib.parse import urlparse
 
 class MyBlockchain:
+    
     def __init__(self):
         self.blocks = []
         self.transactions = []
