@@ -52,6 +52,7 @@ class MyBlockchain:
     def add_node_to_network(self, address):
         parsed_url = urlparse(address)
         self.nodes.add(parsed_url.netloc)
+        
     def print_block(self, block_index=None):
         if block_index is None:
             for block in self.blocks:
