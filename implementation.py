@@ -1,7 +1,6 @@
 import datetime
 import hashlib
 import json
-from uuid import uuid4
 from urllib.parse import urlparse
 
 class MyBlockchain:
@@ -22,7 +21,6 @@ class MyBlockchain:
         }
         hash_value = self.calculate_hash(block)
         block["hash"] = hash_value
-        self.transactions = []
         self.blocks.append(block)
         return block
 
@@ -50,18 +48,34 @@ class MyBlockchain:
             "receiver": receiver,
             "amount": amount
         })
-        previous_block = self.get_previous_block()
-        return previous_block["index"] + 1
 
     def add_node_to_network(self, address):
         parsed_url = urlparse(address)
         self.nodes.add(parsed_url.netloc)
+    def print_block(self, block_index=None):
+        if block_index is None:
+            for block in self.blocks:
+                self._print_block_details(block)
+        elif 0 <= block_index < len(self.blocks):
+            block = self.blocks[block_index]
+            self._print_block_details(block)
+        else:
+            print("Invalid block index.")
 
+    def _print_block_details(self, block):
+        print("Block Index:", block["index"])
+        print("Timestamp:", block["timestamp"])
+        print("Proof:", block["proof"])
+        print("Previous Hash:", block["previous_hash"])
+        print("Transactions:", block["transactions"])
+        print("Hash:", block["hash"])
+        print()
+        print("Connected Nodes:")
+        for node in self.nodes:
+            print("- ", node)
+        print()
 
 my_blockchain = MyBlockchain()
-
-
-node_address = str(uuid4()).replace('-', '')
 
 
 def mine_my_block():
@@ -69,9 +83,7 @@ def mine_my_block():
     previous_proof = previous_block['proof']
     proof = my_blockchain.proof_of_work(previous_proof)
     previous_hash = my_blockchain.calculate_hash(previous_block)
-    my_blockchain.add_transaction(sender=node_address, receiver="Miner", amount=10)
     block = my_blockchain.create_block(proof, previous_hash)
-    return block
 
 
 def add_my_transaction(sender, receiver, amount):
@@ -81,15 +93,17 @@ def add_my_transaction(sender, receiver, amount):
 
 def connect_my_node(node):
     my_blockchain.add_node_to_network(node)
-    return "Node connected successfully."
+    return "Node connected successfully.\n"
 
 
 if __name__ == "__main__":
     print("Mining my block...")
-    print(mine_my_block())
+    mine_my_block()
 
     print("Adding my transaction...")
     print(add_my_transaction("sender1", "receiver1", 10))
 
     print("Connecting my node...")
     print(connect_my_node("http://192.168.0.5:5000"))
+
+    my_blockchain.print_block()
